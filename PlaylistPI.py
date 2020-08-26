@@ -1,3 +1,7 @@
+#Playlist PI
+#Author: Calvin Todorovich
+
+#Setting up libraries and environment
 import numpy as np # library to handle data in a vectorized manner
 import pandas as pd # library for data analsysis
 import datetime
@@ -41,10 +45,14 @@ header = {
     "Authorization": f"Bearer {access_token}"
 }
 
+#Function Definition
+
 #GetVariation
 #Pass in two dataframes (target, library)
 #Populate variation between frame 1 and 2 in a new column
 def GetVariation(targ, lib):
+    print("Getting Variation")
+    print(lib['Danceability'][0])
     l = len(lib)
     var_list = []
     for i in range(l):
@@ -166,10 +174,13 @@ def CrossRef(playlist, library):
 def main():
     print("Welcome to Playlist PI")
 
+    print("Loading Data")
     #In the future, prompt the user to browse files for playlist
     playlist_df = pd.read_csv('STCD_data.csv', low_memory=False)
-    library_df = pd.read_csv('MusicLibrary3.csv', low_memory=False, encoding='latin1')
-    
+    #library_df = pd.read_csv('MusicLibrary3.csv', low_memory=False, encoding='latin1')
+    library_df = pd.read_csv('top_plays.csv', low_memory=False, encoding = 'latin1')  #Has ~400 songs, should be much faster
+
+    print("Cleaning Data")    
     library_df = CleanPar(library_df)
     playlist_df = CleanPar(playlist_df)
 
@@ -185,14 +196,18 @@ def main():
     library_df.fillna(0, inplace=True)
     playlist_df.fillna(0, inplace=True)
 
+    print("Getting Spotify Data")
     playlist_df = GetIDs(playlist_df)
     library_df = GetIDs(library_df)
+
+    playlist_df = GetData(playlist_df)
+    library_df = GetData(library_df)
 
     target = playlist_df.mean()
 
     library_df = GetVariation(target, library_df) #error here
-
-    library_df.sort_values(by='Variation').head(15) #Lowest Variation => Most similar to target
+    print("Result: ")
+    print(library_df.sort_values(by='Variation').head(15)) #Lowest Variation => Most similar to target
 
 
 if __name__ == "__main__":
