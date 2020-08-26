@@ -205,7 +205,7 @@ def main():
 
     target = playlist_df.mean()
 
-    library_df = GetVariation(target, library_df) #error here
+    library_df = GetVariation(target, library_df)
     print("Result: ")
     print(library_df.sort_values(by='Variation').head(15)) #Lowest Variation => Most similar to target
 
